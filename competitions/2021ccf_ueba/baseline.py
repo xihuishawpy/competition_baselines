@@ -30,10 +30,10 @@ for f in tqdm(['account', 'group', 'IP', 'url', 'switchIP', 'IP_PORT']):
 
 for f1 in tqdm(['account', 'group']):
     for f2 in ['IP', 'url', 'IP_PORT']:
-        df['{}_{}_count'.format(f1, f2)] = df.groupby([f1, f2])['id'].transform('count')
-        df['{}_in_{}_count_prop'.format(f2, f1)] = df['{}_{}_count'.format(f1, f2)] / df[f1 + '_count']
-        df['{}_in_{}_nunique'.format(f2, f1)] = df.groupby(f1)[f2].transform('nunique')
-        df['{}_in_{}_nunique'.format(f1, f2)] = df.groupby(f2)[f1].transform('nunique')
+        df[f'{f1}_{f2}_count'] = df.groupby([f1, f2])['id'].transform('count')
+        df[f'{f2}_in_{f1}_count_prop'] = df[f'{f1}_{f2}_count'] / df[f1 + '_count']
+        df[f'{f2}_in_{f1}_nunique'] = df.groupby(f1)[f2].transform('nunique')
+        df[f'{f1}_in_{f2}_nunique'] = df.groupby(f2)[f1].transform('nunique')
 
 for f in tqdm(['account', 'group']):
     df[f + '_next10_time_gap'] = df.groupby(f)['timestamp'].shift(-10) - df['timestamp']
@@ -61,7 +61,7 @@ clf = LGBMRegressor(
     random_state=2021
 )
 for i, (trn_idx, val_idx) in enumerate(skf.split(X)):
-    print('--------------------- {} fold ---------------------'.format(i))
+    print(f'--------------------- {i} fold ---------------------')
     t = time.time()
     trn_x, trn_y = X[cols].iloc[trn_idx].reset_index(drop=True), X['ret'].values[trn_idx]
     val_x, val_y = X[cols].iloc[val_idx].reset_index(drop=True), X['ret'].values[val_idx]
@@ -78,6 +78,6 @@ for i, (trn_idx, val_idx) in enumerate(skf.split(X)):
     print('runtime: {}\n'.format(time.time() - t))
 
 cv_score = eval_score(X['ret'], X['score'])[1]
-X_test[['id', 'ret']].to_csv('sub_{}.csv'.format(cv_score), index=False)
+X_test[['id', 'ret']].to_csv(f'sub_{cv_score}.csv', index=False)
 
 

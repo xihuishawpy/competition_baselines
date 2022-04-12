@@ -32,15 +32,15 @@ model = ClassificationModel('roberta',
                             use_cuda=True, 
                             cuda_device=0, 
                             args=train_args)
-                            
+
 # train model
 model.train_model(train, eval_df=test)
 
 # predict
-text_list = list()
-for i, row in tqdm(test.iterrows()):
-    text_list.append([row['text_a'], row['text_b']])
-    
+text_list = [
+    [row['text_a'], row['text_b']] for i, row in tqdm(test.iterrows())
+]
+
 pred, _ = model.predict(text_list)
 
 sub = pd.DataFrame()
