@@ -42,7 +42,7 @@ def run_lgb_id(df_train, df_test, target, eve_id):
     prediction[target] = 0
 
     kfold = KFold(n_splits=5, random_state=2020)
-    for fold_id, (trn_idx, val_idx) in enumerate(kfold.split(df_train, df_train[target])):
+    for trn_idx, val_idx in kfold.split(df_train, df_train[target]):
         X_train = df_train.iloc[trn_idx][feature_names]
         Y_train = df_train.iloc[trn_idx][target]
         X_val = df_train.iloc[val_idx][feature_names]
@@ -181,7 +181,7 @@ if __name__ == "__main__":
 
 
     predictionsB7 = pd.DataFrame()
-    scoresB7 = list()
+    scoresB7 = []
 
     for eve_id in tqdm(test_B7.I3.unique()):
         prediction,score= run_lgb_id(train_B7, test_B7, target='label', eve_id=eve_id)
@@ -189,8 +189,8 @@ if __name__ == "__main__":
         scoresB7.append(score)
     print(np.mean(scoresB7))
     predictionsB7['label'] = predictionsB7['label'].apply(np.round)
-    predictionsB7['label'] = predictionsB7['label'].apply(lambda x: -1 if x<-1 else x)
-    predictionsB7['label'] = predictionsB7['label'].apply(lambda x: 1 if x>1 else x)
+    predictionsB7['label'] = predictionsB7['label'].apply(lambda x: max(x, -1))
+    predictionsB7['label'] = predictionsB7['label'].apply(lambda x: min(x, 1))
     predictionsB7['label'] = predictionsB7['label'].astype(int)
 
 

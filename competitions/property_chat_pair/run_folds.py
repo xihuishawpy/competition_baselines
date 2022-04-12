@@ -46,10 +46,7 @@ df_test = test[['text_a', 'text_b']]
 submit_sample = pd.read_csv('raw_data/sample_submission.tsv', sep='\t', header=None)
 submit_sample.columns =['qid', 'rid', 'label']
 
-data = []
-for i, row in df_test.iterrows():
-    data.append([row['text_a'], row['text_b']])
-
+data = [[row['text_a'], row['text_b']] for i, row in df_test.iterrows()]
 predictions, raw_outputs = model.predict(data)
 submit_sample['label'] = predictions
 
